@@ -8,6 +8,7 @@
 
 'use strict';
 
+var fs = require('fs');
 module.exports = function(grunt) {
 
     grunt.registerMultiTask('combine_js', 'combine js modules into one file', function() {
@@ -17,21 +18,53 @@ module.exports = function(grunt) {
             separator: ', '
         });
 
+        var done = this.async();
+        var plugins = [];
         var jsonSrc = this.data[0].src;
-        jsonSrc = grunt.file.readJSON(jsonSrc);
+        var folder = this.data[0].folder;
+        var additionalScripts = this.data[0].additional;
 
-        jsonSrc.forEach(function(item) {
-            var src = item.modules;
-            var destFolder = item.dest_path;
-            var destName = item.dest_name;
+        fs.readdir(folder, function (err, files) {
+            if (!err) {
+            } else {
+                throw err;
+            }
+            done();
+            plugins = files;
+            var pluginsArray = [];
+            pluginsArray = plugins.map(function (path) {
+                path = folder + path;
+                return path;
+            });
 
-            var paths = src.map(function (path) {
-                var src = grunt.file.read(path);
-                src = grunt.template.process(src, options.process);
-                return src;
-            }).join('');
-
-            grunt.file.write(destFolder + destName, paths);
+            modules(pluginsArray);
         });
+
+        var modules = function (plugins) {
+
+            jsonSrc = grunt.file.readJSON(jsonSrc);
+
+            jsonSrc.forEach(function(item) {
+                var src = item.modules;
+                var destFolder = item.dest_path;
+                var destName = item.dest_name;
+
+                plugins.map(function (path) {
+                    src.unshift(path);
+                });
+
+                additionalScripts.map(function (path) {
+                    src.unshift(path);
+                });
+
+                var paths = src.map(function (path) {
+                    var src = grunt.file.read(path);
+                    src = grunt.template.process(src, options.process);
+                    return src;
+                }).join('');
+
+                grunt.file.write(destFolder + destName, paths);
+            });
+        }
     });
 };
