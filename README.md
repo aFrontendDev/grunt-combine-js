@@ -22,64 +22,56 @@ grunt.loadNpmTasks('grunt-combine-js');
 ### Overview
 In your project's Gruntfile, add a section named `combine_js` to the data object passed into `grunt.initConfig()`.
 
-```js
-grunt.initConfig({
-  combine_js: {
-    options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
-  },
-});
-```
+The idea behind this plugin is that you can pick and choose from your javascript modules to combine them into one file with the name and destination of your choosing.
 
-### Options
+In the grunt file you will have 3 options:
+1) "src" - this is the path to the json build file which will contain the JS module paths and the destination name and destination folder.
+2) "combine_folder" - you may have a folder that contains scripts you also want to include in your final js file, for plugins perhaps.
+3) "additional_files" - literally just extra scripts you would like included, so this could be scripts that are to be included in every js file build, e.g. a pub/sub script.
 
-#### options.separator
-Type: `String`
-Default value: `',  '`
-
-A string value that is used to do something with whatever.
-
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
-
-A string value that is used to do something else with whatever else.
+The order these scripts will be combined in the final file is:
+1) additional_files
+2) combine_folder
+3) src
 
 ### Usage Examples
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
 ```js
 grunt.initConfig({
   combine_js: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
+    files: [{
+      src: '/path/to/json/file/build.json',
+      combine_folder: '/path/to/directory/where/all/files/will/be/combined/',
+      additional_files: [
+        '/path/to/extra/scripts/file-a.js',
+        '/another/path/to/extra/scripts/file-b.js'
+      ]
+    }]
   },
 });
 ```
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+### Example JSON build file
 
 ```js
-grunt.initConfig({
-  combine_js: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
+[
+    {
+        "modules": [
+            "src/assets/scripts/modules/file-a.js",
+            "src/assets/scripts/modules/file-b.js"
+        ],
+        "dest_name": "test_a.js",
+        "dest_path": "dist/_scripts/"
     },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
+    {
+        "modules": [
+            "src/assets/scripts/modules/file-c.js",
+            "src/assets/scripts/modules/file-d.js"
+        ],
+        "dest_name": "test_b.js",
+        "dest_path": "dist/_scripts/"
+    }
+]
 ```
 
 ## Contributing
