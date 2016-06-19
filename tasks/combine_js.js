@@ -21,8 +21,8 @@ module.exports = function(grunt) {
         var done = this.async();
         var plugins = [];
         var jsonSrc = this.data[0].src;
-        var folder = this.data[0].folder;
-        var additionalScripts = this.data[0].additional;
+        var folder = this.data[0].combine_folder;
+        var additionalScripts = this.data[0].additional_files;
 
         fs.readdir(folder, function (err, files) {
             if (!err) {
