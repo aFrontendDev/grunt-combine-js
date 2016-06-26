@@ -1,6 +1,6 @@
 {
   "name": "grunt-combine-js",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "combine js modules into one file",
   "scripts": {
     "test": "echo 'Error: no test specified' && exit 1"

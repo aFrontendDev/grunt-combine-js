@@ -26,23 +26,6 @@ module.exports = function(grunt) {
         var baseFiles = this.data[0].base_files;
         var pluginsArray = [];
 
-        if (folder) {
-            fs.readdir(folder, function (err, files) {
-                if (!err) {
-                } else {
-                    throw err;
-                }
-                //done();
-                plugins = files;
-                pluginsArray = plugins.map(function (path) {
-                    path = folder + path;
-                    return path;
-                });
-
-                modules(pluginsArray);
-            });
-        }
-
         var modules = function () {
 
             jsonSrc = grunt.file.readJSON(jsonSrc);
@@ -101,7 +84,22 @@ module.exports = function(grunt) {
             });
         }
 
-        if (!folder) {
+        if (folder) {
+            fs.readdir(folder, function (err, files) {
+                if (!err) {
+                } else {
+                    throw err;
+                }
+
+                plugins = files;
+                pluginsArray = plugins.map(function (path) {
+                    path = folder + path;
+                    return path;
+                });
+
+                modules(pluginsArray);
+            });
+        } else {
             modules();
         }
     });
