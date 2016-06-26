@@ -23,39 +23,67 @@ module.exports = function(grunt) {
         var jsonSrc = this.data[0].src;
         var folder = this.data[0].combine_folder;
         var additionalScripts = this.data[0].additional_files;
+        var baseFiles = this.data[0].base_files;
+        var pluginsArray = [];
 
-        fs.readdir(folder, function (err, files) {
-            if (!err) {
-            } else {
-                throw err;
-            }
-            done();
-            plugins = files;
-            var pluginsArray = [];
-            pluginsArray = plugins.map(function (path) {
-                path = folder + path;
-                return path;
+        if (folder) {
+            fs.readdir(folder, function (err, files) {
+                if (!err) {
+                } else {
+                    throw err;
+                }
+                //done();
+                plugins = files;
+                pluginsArray = plugins.map(function (path) {
+                    path = folder + path;
+                    return path;
+                });
+
+                modules(pluginsArray);
             });
+        }
 
-            modules(pluginsArray);
-        });
-
-        var modules = function (plugins) {
+        var modules = function () {
 
             jsonSrc = grunt.file.readJSON(jsonSrc);
+            var jsonSrcLength = jsonSrc.length;
 
-            jsonSrc.forEach(function(item) {
+            jsonSrc.forEach(function(item, index) {
                 var src = item.modules;
                 var destFolder = item.dest_path;
                 var destName = item.dest_name;
+                var includeBase = true;
 
-                plugins.map(function (path) {
-                    src.unshift(path);
-                });
+                if (typeof item.useBase !== 'undefined') {
+                    includeBase = item.useBase;
+                }
 
-                additionalScripts.map(function (path) {
-                    src.unshift(path);
-                });
+                if (!destFolder || !destName) {
+                    console.log('Grunt Combine JS: No destination folder or no destination name');
+                    return;
+                }
+
+                if (baseFiles && includeBase) {
+                    baseFiles.reverse();
+                    baseFiles.map(function (path) {
+                        src.unshift(path);
+                    });
+                }
+
+                if (pluginsArray) {
+                    pluginsArray.reverse();
+                    pluginsArray.map(function (path) {
+                        src.unshift(path);
+                    });
+                }
+
+                if (additionalScripts) {
+                    additionalScripts.reverse();
+                    additionalScripts.map(function (path) {
+                        src.unshift(path);
+                    });
+                }
+
 
                 var paths = src.map(function (path) {
                     var src = grunt.file.read(path);
@@ -64,7 +92,17 @@ module.exports = function(grunt) {
                 }).join('');
 
                 grunt.file.write(destFolder + destName, paths);
+                console.log('Created file: ' + destName);
+
+                if (index === (jsonSrcLength - 1)) {
+                    console.log('grunt combine js END');
+                    done();
+                }
             });
+        }
+
+        if (!folder) {
+            modules();
         }
     });
 };

@@ -24,15 +24,23 @@ In your project's Gruntfile, add a section named `combine_js` to the data object
 
 The idea behind this plugin is that you can pick and choose from your javascript modules to combine them into one file with the name and destination of your choosing.
 
-In the grunt file you will have 3 options:
-1) "src" - this is the path to the json build file which will contain the JS module paths and the destination name and destination folder.
-2) "combine_folder" - you may have a folder that contains scripts you also want to include in your final js file, for plugins perhaps.
-3) "additional_files" - literally just extra scripts you would like included, so this could be scripts that are to be included in every js file build, e.g. a pub/sub script.
+In the grunt file you will have 4 options:
+1. "src" - this is the path to the json build file which will contain the JS module paths and the destination name and destination folder.
+2. "combine_folder" - you may have a folder that contains scripts you also want to include in your final js file, for plugins perhaps.
+3. "additional_files" - literally just extra scripts you would like included, so this could be scripts that are to be included in every js file build, e.g. a pub/sub script.
+4. "base_files" - this will allow you to set some predefined files to include in every build, these will be inserted before the 'src' files.
+
+In the JSON file you use for "src" there are the following options:
+1. "modules" - an array of file paths to the files you want to combine *REQUIRED
+2. "dest_name" - what the file will be called when built *REQUIRED
+3. "dest_path" - where the built file should go *REQUIRED
+4. "useBase" - by default this is true, if you don't want to use a set of base files then set to false
 
 The order these scripts will be combined in the final file is:
-1) additional_files
-2) combine_folder
-3) src
+1. additional_files
+2. combine_folder
+3. base_files
+4. src
 
 ### Usage Examples
 
@@ -45,6 +53,10 @@ grunt.initConfig({
       additional_files: [
         '/path/to/extra/scripts/file-a.js',
         '/another/path/to/extra/scripts/file-b.js'
+      ],
+      base_files: [
+        'path/to/file.js',
+        'path/to/another/file.js'
       ]
     }]
   },
@@ -61,7 +73,8 @@ grunt.initConfig({
             "src/assets/scripts/modules/file-b.js"
         ],
         "dest_name": "test_a.js",
-        "dest_path": "dist/_scripts/"
+        "dest_path": "dist/_scripts/",
+        "useBase": false
     },
     {
         "modules": [
