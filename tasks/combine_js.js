@@ -9,8 +9,6 @@
 'use strict';
 
 var fs = require('fs');
-var path = require('path');
-
 module.exports = function(grunt) {
 
     grunt.registerMultiTask('combine_js', 'combine js modules into one file', function() {
@@ -101,12 +99,6 @@ module.exports = function(grunt) {
 
                 plugins = files;
                 pluginsArray = plugins.map(function (path) {
-                    var fileExtension = path.extname(path);
-                    console.log(fileExtension);
-                    if (fileExtension !== '.js') {
-                        return;
-                    }
-
                     path = folder + path;
                     return path;
                 });
