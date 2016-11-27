@@ -9,6 +9,8 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
+
 module.exports = function(grunt) {
 
     grunt.registerMultiTask('combine_js', 'combine js modules into one file', function() {
@@ -56,7 +58,13 @@ module.exports = function(grunt) {
                 if (pluginsArray) {
                     pluginsArray.reverse();
                     pluginsArray.map(function (path) {
-                        src.unshift(path);
+                        var pathEnd = path.lastIndexOf('.');
+                        var fileExtension = path.substring(pathEnd + 1);
+                        fileExtension = fileExtension.toLowerCase();
+                        if (fileExtension && typeof fileExtension !== 'undefined' && fileExtension === 'js') {
+                            src.unshift(path);
+                        }
+                        //src.unshift(path);
                     });
                 }
 
@@ -93,6 +101,12 @@ module.exports = function(grunt) {
 
                 plugins = files;
                 pluginsArray = plugins.map(function (path) {
+                    var fileExtension = path.extname(path);
+                    console.log(fileExtension);
+                    if (fileExtension !== '.js') {
+                        return;
+                    }
+
                     path = folder + path;
                     return path;
                 });
