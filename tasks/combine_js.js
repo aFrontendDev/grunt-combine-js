@@ -23,6 +23,7 @@ module.exports = function(grunt) {
         var jsonSrc = this.data[0].src;
         var folder = this.data[0].combine_folder;
         var additionalScripts = this.data[0].additional_files;
+        var finalScripts = this.data[0].final_files;
         var baseFiles = this.data[0].base_files;
         var pluginsArray = [];
 
@@ -70,6 +71,17 @@ module.exports = function(grunt) {
                     additionalScripts.reverse();
                     additionalScripts.map(function (path) {
                         src.unshift(path);
+                    });
+                }
+
+                // FINAL FILES
+                // -----------
+                // Places provided file(s) at the end of the 
+                // generated script file
+                if (finalScripts) {
+                    finalScripts.reverse();
+                    finalScripts.map(function (path) {
+                        src.push(path);
                     });
                 }
 
